@@ -1,0 +1,246 @@
+﻿<Window x:Class="Dept.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Dept"
+        mc:Ignorable="d"
+        Title="Кафедра экономики и управления" Height="700" Width="900" Loaded="Window_Loaded">
+    <Window.Resources>
+        <local:DeptDBDataSet x:Key="deptDataSet"/>
+        <CollectionViewSource x:Key="subjectsViewSource" Source="{Binding subjects, Source={StaticResource deptDataSet}}"/>
+        <CollectionViewSource x:Key="teachersViewSource" Source="{Binding teachers, Source={StaticResource deptDataSet}}"/>
+        <CollectionViewSource x:Key="studentsViewSource" Source="{Binding students, Source={StaticResource deptDataSet}}"/>
+        <CollectionViewSource x:Key="subjects_specialitiesViewSource" Source="{Binding subjects_specialities, Source={StaticResource deptDataSet}}"/>
+        <CollectionViewSource x:Key="specialitiesViewSource" Source="{Binding specialities, Source={StaticResource deptDataSet}}"/>
+        <CollectionViewSource x:Key="staffScheduleViewSource" Source="{Binding staffSchedule, Source={StaticResource deptDataSet}}"/>
+    </Window.Resources>
+    <Grid>
+        <TabControl >
+            <TabItem Header="Предметы" Width="190">
+                <DockPanel DataContext="{StaticResource subjects_specialitiesViewSource}" >
+                    <Border BorderBrush="CornflowerBlue" BorderThickness="2" Margin="5" CornerRadius="15" DockPanel.Dock="Top">
+                        <StackPanel >
+                            <DataGrid DataContext="{StaticResource subjectsViewSource}" x:Name="subjectsDataGrid" AutoGenerateColumns="False" EnableRowVirtualization="True" 
+                              ItemsSource="{Binding}" DockPanel.Dock="Top" RowDetailsVisibilityMode="VisibleWhenSelected" 
+                              Unloaded="subjectsDataGrid_Unloaded" RowEditEnding="subjectsDataGrid_RowEditEnding" Margin="10"
+                              AlternatingRowBackground="LightGreen">
+                                <DataGrid.Columns>
+                                    <!--<DataGridTextColumn x:Name="idColumn" Binding="{Binding id}" Header="id" IsReadOnly="True" Width="SizeToHeader"/>-->
+                                    <DataGridTextColumn x:Name="subjectColumn" Binding="{Binding subject, UpdateSourceTrigger=PropertyChanged}" Header="Дисциплина" Width="210"/>
+                                    <DataGridTextColumn x:Name="allLessonsColumn" Binding="{Binding allLessons}" Header="Всего часов" Width="SizeToHeader"/>
+                                    <DataGridTextColumn x:Name="theorLessonsColumn" Binding="{Binding theorLessons}" Header="Теория" Width="SizeToHeader"/>
+                                    <DataGridTextColumn x:Name="practLessonsColumn" Binding="{Binding practLessons}" Header="Практика" Width="SizeToHeader"/>
+                                    <DataGridTextColumn x:Name="testType_idColumn" Binding="{Binding testType_id}" Header="Форма испытания" Width="SizeToHeader"/>
+                                    <DataGridCheckBoxColumn x:Name="coursePaperColumn" Binding="{Binding coursePaper}" Header="Наличие курсовой" Width="SizeToHeader"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <Button x:Name="saveSbjBtn" Content="Сохранить изменения" DockPanel.Dock="Top" Width="150" Margin="10" Click="saveSbjBtn_Click"/>
+                        </StackPanel>
+                    </Border>
+                    <!--<Grid>
+                        <DataGrid x:Name="subjects_specialitiesDataGrid" AutoGenerateColumns="False" EnableRowVirtualization="True" HorizontalAlignment="Left" ItemsSource="{Binding Source={StaticResource subjects_specialitiesViewSource}}" Margin="27,220,0,173" RowDetailsVisibilityMode="VisibleWhenSelected" Width="400" d:LayoutOverrides="Width">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn x:Name="idColumn" Binding="{Binding id}" Header="id" IsReadOnly="True" Width="SizeToHeader"/>
+                                <DataGridTextColumn x:Name="subjects_idColumn" Binding="{Binding subjects_id}" Header="subjects id" Width="SizeToHeader"/>
+                                <DataGridTextColumn x:Name="specialities_idColumn" Binding="{Binding specialities_id}" Header="specialities id" Width="SizeToHeader"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                    </Grid>-->
+                    <StackPanel>
+                        <Border BorderBrush="CornflowerBlue" BorderThickness="2" Margin="5" CornerRadius="15">
+                            <StackPanel Orientation="Horizontal" Margin="20">
+
+                                <StackPanel>
+                                    <TextBlock Width="350"  TextWrapping="Wrap" Margin="0,10"
+                                           Text="Чтобы просмотреть специальности, для которых читается дисциплина, выберите её в списке ниже: " >
+
+                                    </TextBlock>
+                                    <ComboBox x:Name="cbSubj" Width="350" Height="30" Margin="10" SelectionChanged="cbSubj_Selected" />
+                                </StackPanel>
+                                <StackPanel Margin="20,10">
+
+                                    <Label Content="Cпециальности с данной дисциплиной:"/>
+                                    <ListView x:Name="cbSpec" Width="380" Height="80"></ListView>
+
+                                </StackPanel>
+
+                            </StackPanel>
+                        </Border>
+
+                        <Border BorderBrush="CornflowerBlue" BorderThickness="2" Margin="5" CornerRadius="15">
+                            <StackPanel Orientation="Horizontal">
+
+
+                                <Grid DataContext="{StaticResource specialitiesViewSource}" Width="200" Height="100" Margin="10">
+                                    <DataGrid x:Name="specialitiesDataGrid" AutoGenerateColumns="False" EnableRowVirtualization="True" ItemsSource="{Binding}"  RowDetailsVisibilityMode="VisibleWhenSelected">
+                                        <DataGrid.Columns>
+                                            <!--<DataGridTextColumn x:Name="idColumn" Binding="{Binding id}" Header="id" IsReadOnly="True" Width="SizeToHeader"/>-->
+                                            <DataGridTextColumn x:Name="specialityColumn" Binding="{Binding speciality}" Header="Перечень специальностей" Width="180"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+
+                                </Grid>
+
+                                <!--<DataGrid x:Name="subjects_specialitiesDataGrid" AutoGenerateColumns="False" EnableRowVirtualization="True" Height="75" ItemsSource="{Binding}" RowDetailsVisibilityMode="VisibleWhenSelected" >
+                            <DataGrid.Columns>
+                                <DataGridTextColumn x:Name="idColumn1" Binding="{Binding id}" Header="id" IsReadOnly="True" Width="SizeToHeader"/>
+                                <DataGridTextColumn x:Name="subjects_idColumn" Binding="{Binding subjects_id}" Header="subjects id" Width="SizeToHeader"/>
+                                <DataGridTextColumn x:Name="specialities_idColumn" Binding="{Binding specialities_id}" Header="specialities id" Width="SizeToHeader"/>
+                            </DataGrid.Columns>
+                        </DataGrid>-->
+
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </DockPanel>
+
+            </TabItem>
+            <TabItem Header="Преподаватели" Width="150" >
+                <DockPanel DataContext="{StaticResource teachersViewSource}" >
+                    <Border BorderBrush="CornflowerBlue" BorderThickness="2" Margin="5" CornerRadius="15" DockPanel.Dock="Top">
+                        <StackPanel DockPanel.Dock="Top" Margin="10">
+                            <DataGrid x:Name="teachersDataGrid" AutoGenerateColumns="False" EnableRowVirtualization="True"  
+                                      ItemsSource="{Binding}" DockPanel.Dock="Top" RowDetailsVisibilityMode="VisibleWhenSelected" AlternatingRowBackground="Gainsboro">
+                                <DataGrid.Columns>
+                                    <!--<DataGridTextColumn x:Name="idColumn1" Binding="{Binding id}" Header="id" IsReadOnly="True" Width="SizeToHeader"/>-->
+                                    <DataGridTextColumn x:Name="nameColumn" Binding="{Binding name}" Header="ФИО" Width="150"/>
+                                    <DataGridTemplateColumn x:Name="entr_dateColumn" Header="Дата начала работы" Width="SizeToHeader">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <DatePicker SelectedDate="{Binding entr_date, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn x:Name="positionColumn" Binding="{Binding position}" Header="Должность" Width="210"/>
+                                    <DataGridTextColumn x:Name="max_academic_loadColumn" Binding="{Binding max_academic_load}" Header="Максимальная загрузка" Width="SizeToHeader"/>
+                                    <DataGridTextColumn x:Name="academic_loadColumn" Binding="{Binding academic_load}" Header="Фактическая загрузка" Width="SizeToHeader"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <Button x:Name="saveTeachBtn" Content="Сохранить изменения" Width="150" Margin="10" Click="saveTeachBtn_Click"/>
+                        </StackPanel>
+                    </Border>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Border BorderBrush="CornflowerBlue" BorderThickness="2" Margin="5" CornerRadius="15" DockPanel.Dock="Top">
+                            <StackPanel Margin="20">
+                                <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="Задать количество часов для выбора преподавателей с меньшей загрузкой:"/>
+                                <TextBox x:Name="loadLimitTb" Width="70" Height="30" Margin="10"/>
+                                <Button x:Name="btnFindTeachers" Width="70" Height="30" Cursor="Hand" Click="btnFindTeachers_Click">
+                                    <Button.Content>
+                                        <TextBlock Text="Выбрать" TextWrapping="Wrap" TextAlignment="Center" FontWeight="DemiBold"/>
+                                    </Button.Content>
+                                </Button>
+                                <DataGrid x:Name="lowloadTeachersDg" CanUserAddRows="False" AutoGenerateColumns="False">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Binding="{Binding name}"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </StackPanel>
+                        </Border>
+
+                    </Grid>
+                    <Grid Grid.Column="1">
+                        <DataGrid x:Name="staffScheduleDataGrid" AutoGenerateColumns="False" EnableRowVirtualization="True" Height="200" ItemsSource="{Binding Source={StaticResource staffScheduleViewSource}}" Margin="3,2,8,0" RowDetailsVisibilityMode="VisibleWhenSelected" VerticalAlignment="Top" d:LayoutOverrides="Height">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn x:Name="idColumn" Binding="{Binding id}" Header="код должности" IsReadOnly="True" Width="SizeToHeader"/>
+                                <DataGridTextColumn x:Name="positionColumn1" Binding="{Binding position}" Header="должность" Width="300"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                    </Grid>
+                </DockPanel>
+            </TabItem>
+            <TabItem Header="Студенты" Width="120">
+                <Border BorderBrush="CornflowerBlue" BorderThickness="2" Margin="5" CornerRadius="15" DockPanel.Dock="Top">
+                    <Grid DataContext="{StaticResource studentsViewSource}">
+                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                            <StackPanel Width="350">
+
+                                <DataGrid x:Name="studentsDataGrid" AutoGenerateColumns="False" EnableRowVirtualization="True" 
+                                          ItemsSource="{Binding}"  RowDetailsVisibilityMode="VisibleWhenSelected" AlternatingRowBackground="Aqua">
+                                    <DataGrid.Columns>
+                                        <!--<DataGridTextColumn x:Name="idColumn2" Binding="{Binding id}" Header="id" IsReadOnly="True" Width="SizeToHeader"/>-->
+                                        <DataGridTextColumn x:Name="nameColumn1" Binding="{Binding name}" Header="ФИО" Width="250"/>
+                                        <DataGridTextColumn x:Name="group_idColumn" Binding="{Binding group_id}" Header="Группа" Width="SizeToHeader"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+
+                                <Button x:Name="saveStudBtn" Content="Сохранить изменения" Width="150" Height="30" Margin="10" Click="saveStudBtn_Click"/>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
+            </TabItem>
+            <TabItem Header="Специальности" Width="150">
+                <DataGrid x:Name="specDg" Grid.Column="1" Margin="10" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True"  >
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Специальность" Binding="{Binding Name}"/>
+                        <DataGridTextColumn Header="Количество групп" Binding="{Binding GroupAmount}"/>
+                        <DataGridTemplateColumn Header="Студенты" >
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ListView ItemsSource="{Binding Students}">
+                                        <ListView.View >
+                                            <GridView  >
+                                                <GridViewColumn  >
+                                                    <GridViewColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock FontSize="8pt" Margin="5,0,5,0" Text="{Binding }" />
+                                                        </DataTemplate>
+                                                    </GridViewColumn.CellTemplate>
+                                                </GridViewColumn>
+                                            </GridView>
+                                        </ListView.View>
+                                    </ListView>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Предметы" >
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ListView ItemsSource="{Binding Subjects}">
+                                        <ListView.View >
+                                            <GridView  >
+                                                <GridViewColumn  >
+                                                    <GridViewColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock FontSize="8pt" Margin="5,0,5,0" Text="{Binding }" />
+                                                        </DataTemplate>
+                                                    </GridViewColumn.CellTemplate>
+                                                </GridViewColumn>
+                                            </GridView>
+                                        </ListView.View>
+                                    </ListView>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Преподаватели" >
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ListView ItemsSource="{Binding Teachers}">
+                                        <ListView.View >
+                                            <GridView  >
+                                                <GridViewColumn  >
+                                                    <GridViewColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock FontSize="8pt" Margin="5,0,5,0" Text="{Binding }" />
+                                                        </DataTemplate>
+                                                    </GridViewColumn.CellTemplate>
+                                                </GridViewColumn>
+                                            </GridView>
+                                        </ListView.View>
+                                    </ListView>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
